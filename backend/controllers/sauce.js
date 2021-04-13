@@ -9,8 +9,9 @@ exports.createSauce = (req, res, next) => {
   delete sauceObject._id;
   const sauce = new Sauce({
     ...sauceObject,
-    imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename
-      }`,
+    imageUrl: `${req.protocol}://${req.get("host")}/images/${
+      req.file.filename
+    }`,
     likes: 0,
     dislikes: 0,
     usersLiked: [],
@@ -25,10 +26,11 @@ exports.createSauce = (req, res, next) => {
 exports.modifySauce = (req, res, next) => {
   const sauceObject = req.file
     ? {
-      ...JSON.parse(req.body.sauce),
-      imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename
+        ...JSON.parse(req.body.sauce),
+        imageUrl: `${req.protocol}://${req.get("host")}/images/${
+          req.file.filename
         }`,
-    }
+      }
     : { ...req.body };
   Sauce.updateOne(
     { _id: req.params.id },
@@ -72,27 +74,124 @@ exports.rateSystem = (req, res, next) => {
   // On prend l'id de la sauce
   let sauceId = req.params.id;
 
-  Sauce.findOne({ _id: sauceId })
-    .then((sauce => {
-      switch(like) {
-        case -1 :
-          break;
-        case 0 :
-          break;
-        case 1 :
-          break;
-      }
-      // Si un utilisateur met un like, alors on incrémente la valeur du nombre de likes et on stocke l'id de l'utilisateur
-      if (like == 1 && !sauce.usersLiked.includes(userId)) {
-        sauce.likes += 1;
-        sauce.usersLiked.push(userId);
-      }
+  Sauce.findOne({ _id: sauceId }).then((sauce) => {
+    switch (like) {
       // Si un utilisateur met un dislike, alors on incrémente la valeur du nombre de dislikes et on stocke l'id de l'utilisateur
-      if (like == -1 && !sauce.usersDisliked.includes(userId)) {
-        sauce.dislikes += 1;
-        sauce.usersDisliked.push(userId);
-      }
-
-    })
-      .catch((error) => res.status(404).json({ error })));
+      case -1:
+        Sauce.updateOne(
+          {
+            _id: sauceId,
+          },
+          {
+            $push: {
+              usersLiked: userId,
+            }, // On envoie l'id de l'utilisateur à la BDD
+            $inc: {
+              dislikes: +1,
+            }, // On incrémente le nombre de dislikes de 1
+          }
+        )
+          .then(() =>
+            res.status(200).json({
+              message: "L'utilisateur a disliké la sauce !",
+            })
+          )
+          .catch((error) =>
+            res.status(400).json({
+              error,
+            })
+          );
+        break;
+      case 0:
+        Sauce.findOne({
+          _id: sauceId,
+        })
+          .then((sauce) => {
+            if (sauce.usersLiked.includes(userId)) {
+              // Si l'utilisateur a liké la sauce et souhaite annuler son avis
+              Sauce.updateOne(
+                {
+                  _id: sauceId,
+                },
+                {
+                  $inc: {
+                    likes: -1, // On décrémente le nombre de likes de 1
+                  },
+                  $pull: {
+                    usersLiked: userId, // On retire son id de la BDD
+                  },
+                }
+              )
+                .then(() =>
+                  res.status(200).json({
+                    message: "L'utilisateur n'aime plus la sauce",
+                  })
+                )
+                .catch((error) =>
+                  res.status(400).json({
+                    error,
+                  })
+                );
+            }
+            if (sauce.usersDisliked.includes(userId)) {
+              // Si l'utilisateur a disliké la sauce et souhaite annuler son avis
+              Sauce.updateOne(
+                {
+                  _id: sauceId,
+                },
+                {
+                  $inc: {
+                    dislikes: -1, // On décrémente le nombre de dislikes de 1
+                  },
+                  $pull: {
+                    usersDisliked: userId, // On retire son ID de la BDD
+                  },
+                }
+              )
+                .then(() =>
+                  res.status(200).json({
+                    message: "Dislike retiré !",
+                  })
+                )
+                .catch((error) =>
+                  res.status(400).json({
+                    error,
+                  })
+                );
+            }
+          })
+          .catch((error) =>
+            res.status(404).json({
+              error,
+            })
+          );
+        break;
+      // Si un utilisateur met un like, alors on incrémente la valeur du nombre de likes et on stocke l'id de l'utilisateur
+      case 1:
+        Sauce.updateOne(
+          {
+            _id: sauceId,
+          },
+          {
+            $push: {
+              usersLiked: userId,
+            }, // On envoie l'id de l'utilisateur à la BDD
+            $inc: {
+              likes: +1,
+            }, // On incrémente le nombre de likes de 1
+          }
+        )
+          .then(() =>
+            res.status(200).json({
+              message: "L'utilisateur a liké la sauce !",
+            })
+          )
+          .catch((error) =>
+            res.status(400).json({
+              error,
+            })
+          );
+        break;
+    }
+  });
 };
