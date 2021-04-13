@@ -9,9 +9,8 @@ exports.createSauce = (req, res, next) => {
   delete sauceObject._id;
   const sauce = new Sauce({
     ...sauceObject,
-    imageUrl: `${req.protocol}://${req.get("host")}/images/${
-      req.file.filename
-    }`,
+    imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename
+      }`,
     likes: 0,
     dislikes: 0,
     usersLiked: [],
@@ -26,11 +25,10 @@ exports.createSauce = (req, res, next) => {
 exports.modifySauce = (req, res, next) => {
   const sauceObject = req.file
     ? {
-        ...JSON.parse(req.body.sauce),
-        imageUrl: `${req.protocol}://${req.get("host")}/images/${
-          req.file.filename
+      ...JSON.parse(req.body.sauce),
+      imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename
         }`,
-      }
+    }
     : { ...req.body };
   Sauce.updateOne(
     { _id: req.params.id },
@@ -75,7 +73,26 @@ exports.rateSystem = (req, res, next) => {
   let sauceId = req.params.id;
 
   Sauce.findOne({ _id: sauceId })
-    .then((sauce) => 
-    res.status(200).json(sauce))
-    .catch((error) => res.status(404).json({ error }));  
+    .then((sauce => {
+      switch(like) {
+        case -1 :
+          break;
+        case 0 :
+          break;
+        case 1 :
+          break;
+      }
+      // Si un utilisateur met un like, alors on incrémente la valeur du nombre de likes et on stocke l'id de l'utilisateur
+      if (like == 1 && !sauce.usersLiked.includes(userId)) {
+        sauce.likes += 1;
+        sauce.usersLiked.push(userId);
+      }
+      // Si un utilisateur met un dislike, alors on incrémente la valeur du nombre de dislikes et on stocke l'id de l'utilisateur
+      if (like == -1 && !sauce.usersDisliked.includes(userId)) {
+        sauce.dislikes += 1;
+        sauce.usersDisliked.push(userId);
+      }
+
+    })
+      .catch((error) => res.status(404).json({ error })));
 };
