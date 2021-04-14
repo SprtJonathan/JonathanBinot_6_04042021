@@ -65,7 +65,7 @@ exports.getAllSauces = (req, res, next) => {
     .catch((error) => res.status(400).json({ error }));
 };
 
-exports.rateSystem = (req, res, next) => {
+exports.rateSauce = (req, res, next) => {
   // Pour la route READ = Ajout/suppression d'un like / dislike à une sauce
   // Like présent dans le body
   let like = req.body.like;
@@ -84,11 +84,12 @@ exports.rateSystem = (req, res, next) => {
           },
           {
             $push: {
-              usersLiked: userId,
+              usersDisliked: userId,
             }, // On envoie l'id de l'utilisateur à la BDD
             $inc: {
               dislikes: +1,
             }, // On incrémente le nombre de dislikes de 1
+            _id: sauceId,
           }
         )
           .then(() =>
@@ -120,6 +121,7 @@ exports.rateSystem = (req, res, next) => {
                   $pull: {
                     usersLiked: userId, // On retire son id de la BDD
                   },
+                  _id: sauceId,
                 }
               )
                 .then(() =>
@@ -146,6 +148,7 @@ exports.rateSystem = (req, res, next) => {
                   $pull: {
                     usersDisliked: userId, // On retire son ID de la BDD
                   },
+                  _id: sauceId,
                 }
               )
                 .then(() =>
@@ -179,6 +182,7 @@ exports.rateSystem = (req, res, next) => {
             $inc: {
               likes: +1,
             }, // On incrémente le nombre de likes de 1
+            _id: sauceId,
           }
         )
           .then(() =>
