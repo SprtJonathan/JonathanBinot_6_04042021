@@ -39,7 +39,7 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
   // Set to true if you need the website to include cookies in the requests sent
   // to the API (e.g. in case you use sessions)
-  res.setHeader('Access-Control-Allow-Credentials', 'true');;
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   // Pass to next layer of middleware
   next();
 });
@@ -52,7 +52,7 @@ app.use(session({
   cookie: {
     httpOnly: true,
     maxAge: parseInt(process.env.SESSION_MAX_AGE),
-    secure: true,
+    secure: false,
     domain: 'http://localhost:3000'
   }
 }))
