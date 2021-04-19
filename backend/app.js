@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const path = require("path");
 
 // Utilisation de helmet :
-// Il protège l'application de vulnérabilités répandues en installant les headers HTTP de manière approppriée.
+// Il protège l'application de vulnérabilités répandues.
 // C'est une collection de middlewares liés à la sécurité des requêtes HTTP
 let helmet = require("helmet");
 
@@ -27,17 +27,16 @@ mongoose
 const app = express();
 
 app.use(function (req, res, next) {
-  // Website you wish to allow to connect
+  // Le site auquel 'lutilisateur souhaite se connecter
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  // Request methods you wish to allow
+  // Les requêtes autorisées
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-  // Request headers you wish to allow
+
+  // Les headers autorisés
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
-  // Set to true if you need the website to include cookies in the requests sent
-  // to the API (e.g. in case you use sessions)
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  // Pass to next layer of middleware
+  
+  // On passe au middleware suivant
   next();
 });
 
