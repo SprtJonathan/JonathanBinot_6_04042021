@@ -28,14 +28,20 @@ const app = express();
 
 app.use(function (req, res, next) {
   // Le site auquel 'lutilisateur souhaite se connecter
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader("Access-Control-Allow-Origin", "*");
 
   // Les requêtes autorisées
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, PATCH, DELETE"
+  );
 
   // Les headers autorisés
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
-  
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-Requested-With,content-type, Authorization"
+  );
+
   // On passe au middleware suivant
   next();
 });
