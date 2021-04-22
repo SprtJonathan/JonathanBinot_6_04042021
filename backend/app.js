@@ -1,47 +1,46 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
-const path = require("path");
+// Corps de l'application Express
+
+const express = require("express"); // Utilisation du framework node Express afin de simplifier la création de l'application
+const bodyParser = require("body-parser"); // Package permettant d'analyser le corps des requêtes
+const mongoose = require("mongoose"); // Package permettant de se connecter à la BDD mongoDB
+const path = require("path"); // Package permettant le travail sur les fichiers locaux (utile pour la gestion des images)
 
 // Utilisation de helmet :
 // Il protège l'application de vulnérabilités répandues.
 // C'est une collection de middlewares liés à la sécurité des requêtes HTTP
 let helmet = require("helmet");
 
-const sauceRoutes = require("./routes/sauce");
-const userRoutes = require("./routes/user");
+const sauceRoutes = require("./routes/sauce"); // Routes utilisées pour les sauces
+const userRoutes = require("./routes/user"); // Routes utilisées pour les utilisateurs
 
 // Sécurisation des identifiants de connexion au cluster dans une variable d'environnement
-const dotenv = require("dotenv");
+const dotenv = require("dotenv"); // Les identifiants sont contenus dans le fichier .env dans l'archive contenant les livrables
 dotenv.config();
 
-// Connexion à la base
+// Connexion à la base de données
 mongoose
   .connect(process.env.DB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-  })
-  .then(() => console.log("Connexion à MongoDB réussie !"))
-  .catch(() => console.log("Connexion à MongoDB échouée !"));
+  }) //process.env.DB_URL est la variable contenant les informations de connexion
+  .then(() => console.log("Connexion à MongoDB réussie !")) // Si la connexion se fait, alors on envoie un message à la console informant de la réussite
+  .catch(() => console.log("Connexion à MongoDB échouée !")); // Si la connexion échoue, alors l'affiche dans la console
 
-const app = express();
+const app = express(); // Création de l'application utilisant express
 
+// Middleware permettant de corriger les erreurs CORS pouvant survenir à cause de sécurités et ainsi permettre la connexion à tout utilisateur
 app.use(function (req, res, next) {
-  // Le site auquel 'lutilisateur souhaite se connecter
   res.setHeader("Access-Control-Allow-Origin", "*");
-
-  // Les requêtes autorisées
+  // Les différents types de requêtes autorisées
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, PATCH, DELETE"
   );
-
   // Les headers autorisés
   res.setHeader(
     "Access-Control-Allow-Headers",
     "X-Requested-With,content-type, Authorization"
   );
-
   // On passe au middleware suivant
   next();
 });
@@ -50,9 +49,9 @@ app.use(bodyParser.json());
 
 app.use(helmet());
 
-app.use("/images", express.static(path.join(__dirname, "images")));
+app.use("/images", express.static(path.join(__dirname, "images"))); // Permet de charger les images contenues dans le dossier image de l'application
 
 app.use("/api/sauces", sauceRoutes);
 app.use("/api/auth", userRoutes);
 
-module.exports = app;
+module.exports = app; // Exportation afin d'importer l'application dans le server.js
