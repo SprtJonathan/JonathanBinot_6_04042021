@@ -12,6 +12,6 @@ const sauceSchema = mongoose.Schema({
   dislikes: { type: Number },
   usersLiked: { type: [String] },
   usersDisliked: { type: [String] },
-});
+}); // Schéma de l'objet sauce
 
-module.exports = mongoose.model("Sauce", sauceSchema);
+module.exports = mongoose.model("Sauce", sauceSchema); // Exportation pour le controller

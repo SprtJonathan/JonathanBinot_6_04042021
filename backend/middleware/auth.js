@@ -6,11 +6,11 @@ module.exports = (req, res, next) => {
     const decodedToken = jwt.verify(token, "RANDOM_TOKEN_SECRET");
     const userId = decodedToken.userId;
     if (req.body.userId && req.body.userId !== userId) {
-      throw "ID utilisateur invalide";
+      throw "ID utilisateur invalide"; // Authentification avec le JWT (jsonwebtoken)
     } else {
-      next();
+      next(); // Si l'authentification est fructueuse, alors on passe au middleware suivant
     }
   } catch (error) {
-    res.status(401).json({ error: error | "Requête non authentifiée" });
+    res.status(401).json({ error: error | "Requête non authentifiée" }); // Si l'authentification échoue, alors on renvoie une erreur
   }
 };
