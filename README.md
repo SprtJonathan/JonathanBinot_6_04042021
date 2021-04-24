@@ -1,6 +1,10 @@
 # JonathanBinot_6_04042021
 ## Projet 6 du parcours développeur web d'OpenClassrooms
 
+## Prérequis :
+
+Afin de pouvoir installer et faire fonctionner l'application, vous devrez avoir Node et npm installés sur votre ordinateur.
+
 ## Installation :
 
 Afin de pouvoir faire fonctionner l'application, il vous faudra :
