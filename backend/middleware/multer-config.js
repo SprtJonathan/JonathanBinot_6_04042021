@@ -4,6 +4,7 @@ const MIME_TYPES = {
   "image/jpg": "jpg",
   "image/jpeg": "jpg",
   "image/png": "png",
+  "image/webp": "webp",
 }; // Extensions de fichiers reconnues par multer
 
 const storage = multer.diskStorage({
@@ -17,4 +18,6 @@ const storage = multer.diskStorage({
   },
 });
 
-module.exports = multer({ storage: storage }).single("image"); // Exportation
+const limits = {fileSize: 20000000} // Limite de taille pour l'envoi des fichiers
+
+module.exports = multer({ storage: storage, limits: limits }).single("image"); // Exportation
